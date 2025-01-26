@@ -9,11 +9,11 @@ CONFIG_DIR := config
 MAKEFLAGS += --no-print-directory
 
 # Make targets
-.PHONY: az_login checkenv envs init plan apply clean
+.PHONY: gcloud_login checkenv envs init plan apply clean
 
-az_login:
-	@if ! az account show > /dev/null 2>&1; then \
-		az login; \
+gcloud_login:
+	@if ! gcloud auth list-defaults > /dev/null 2>&1; then \
+		gcloud auth login; \
 	fi
 
 checkenv:
@@ -36,18 +36,17 @@ envs:
 		fi; \
 	done
 
-init: checkenv az_login clean
+init: checkenv gcloud_login clean
 	@echo "Initializing Terraform for environment $(ENV)"
 	@echo "Creating tfvars file"
 	@bash ./scripts/merge_config.sh $(ENV)
-	@export ARM_ACCESS_KEY=$(./scripts/get_access_key.sh) && \
-	cd $(TERRAFORM_DIR) && terraform init -backend-config="key=azure_central_deploy_$(ENV).tfstate"
+	@cd $(TERRAFORM_DIR) && terraform init -backend-config="gcp_Test_project/$(ENV)"
 
-plan: checkenv az_login
+plan: checkenv gcloud_login
 	@echo "Running Terraform plan for environment $(ENV)"
 	@cd $(TERRAFORM_DIR) && terraform plan 
 
-apply: checkenv az_login
+apply: checkenv gcloud_login
 	@echo "Applying Terraform configuration for environment $(ENV)"
 	@cd $(TERRAFORM_DIR) && terraform apply 
 

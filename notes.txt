@@ -7,3 +7,5 @@ gcloud init
 gcloud services enable compute.googleapis.com
 
 gcloud services enable secretmanager.googleapis.com
+
+gcloud services enable storage.googleapis.com
