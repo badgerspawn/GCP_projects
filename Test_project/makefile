@@ -12,8 +12,8 @@ MAKEFLAGS += --no-print-directory
 .PHONY: gcloud_login checkenv envs init plan apply clean
 
 gcloud_login:
-	@if ! gcloud auth list-defaults > /dev/null 2>&1; then \
-		gcloud auth login; \
+	@if ! gcloud auth list > /dev/null 2>&1; then \
+		gcloud auth application-default login; \
 	fi
 
 checkenv:
@@ -40,7 +40,9 @@ init: checkenv gcloud_login clean
 	@echo "Initializing Terraform for environment $(ENV)"
 	@echo "Creating tfvars file"
 	@bash ./scripts/merge_config.sh $(ENV)
-	@cd $(TERRAFORM_DIR) && terraform init -backend-config="gcp_Test_project/$(ENV)"
+	@cd $(TERRAFORM_DIR) && terraform init \
+	-backend-config=$(ENV)_backend.tfvars
+
 
 plan: checkenv gcloud_login
 	@echo "Running Terraform plan for environment $(ENV)"
@@ -53,5 +55,6 @@ apply: checkenv gcloud_login
 clean:
 	@echo "Cleaning up"
 	@rm -f $(TERRAFORM_DIR)/*.auto.tfvars
+	@rm -f $(TERRAFORM_DIR)/*_backend.tfvars
 	@rm -rf $(TERRAFORM_DIR)/.terraform
 	@rm -f $(TERRAFORM_DIR)/.terraform.lock.hcl
