@@ -9,7 +9,7 @@ CONFIG_DIR := config
 MAKEFLAGS += --no-print-directory
 
 # Make targets
-.PHONY: gcloud_login checkenv envs init plan apply clean
+.PHONY: gcloud_login checkenv envs init plan apply clean destroy
 
 gcloud_login:
 	@if ! gcloud auth list > /dev/null 2>&1; then \
@@ -45,12 +45,22 @@ init: checkenv gcloud_login clean
 
 
 plan: checkenv gcloud_login
+	@echo "Creating tfvars file"
+	@bash ./scripts/merge_config.sh $(ENV)
 	@echo "Running Terraform plan for environment $(ENV)"
 	@cd $(TERRAFORM_DIR) && terraform plan 
 
 apply: checkenv gcloud_login
+	@echo "Creating tfvars file"
+	@bash ./scripts/merge_config.sh $(ENV)
 	@echo "Applying Terraform configuration for environment $(ENV)"
 	@cd $(TERRAFORM_DIR) && terraform apply 
+
+destroy: checkenv gcloud_login
+	@echo "Creating tfvars file"
+	@bash ./scripts/merge_config.sh $(ENV)
+	@echo "Applying Terraform configuration for environment $(ENV)"
+	@cd $(TERRAFORM_DIR) && terraform destroy 
 
 clean:
 	@echo "Cleaning up"

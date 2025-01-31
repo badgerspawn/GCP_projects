@@ -1,6 +1,16 @@
+variable "billing_account" {
+  description = "billing account"
+  type        = string
+}
+
 variable "env" {
   description = "environment name"
   type        = string
+}
+
+variable "apis" {
+  type    = list(string)
+  default = []
 }
 
 variable "backend_project_id" {
@@ -15,13 +25,13 @@ variable "backend_region" {
   default     = "europe-west2"
 }
 
-variable "project_name" {
-  description = "Project name to target."
-  type        = string
-}
-
 variable "region" {
   description = "Region to target"
   type        = string
   default     = "europe-west2"
 }
+
+variable "subnet_cidr" {
+  type = string
+}
+

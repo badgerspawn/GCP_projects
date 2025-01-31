@@ -1,1 +1,0 @@
-project_name = "hello_world"
