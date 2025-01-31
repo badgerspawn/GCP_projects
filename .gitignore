@@ -1,0 +1,6 @@
+*.auto.tfvars
+*_backend.tfvars
+.terraform.lock.hcl
+# Local .terraform directories
+**/.terraform/*
+
